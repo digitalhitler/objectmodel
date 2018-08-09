@@ -2,6 +2,7 @@
   "name": "getrix/objectmodel",
   "description": "ObjectModel PHP Package",
   "homepage": "https://github.com/digitalhitler/objectmodel",
+  "license": "MIT",
   "version": "1.0.0",
   "type": "project",
   "authors": [

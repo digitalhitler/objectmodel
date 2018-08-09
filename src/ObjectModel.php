@@ -121,7 +121,7 @@ class ObjectModel implements ObjectInterface {
    * @param $name         field name
    * @param $val          field value
    * @return mixed|void
-   * @throws \Exception
+   * @throws ObjectModelException
    */
   public function __set($name, $val) {
 
@@ -141,7 +141,7 @@ class ObjectModel implements ObjectInterface {
 
       $this->changedData[$name] = $val;
 
-      // throw new \Exception("ObjectModel::__set: field values is read-only. Use setValue method");
+      // throw new ObjectModelException("ObjectModel::__set: field values is read-only. Use setValue method");
     }
   }
 
@@ -188,7 +188,7 @@ class ObjectModel implements ObjectInterface {
   /**
    * Magic unset method
    * @param string $name
-   * @throws \Exception
+   * @throws ObjectModelException
    */
   public function __unset(string $name) {
     $this->data[$name] = $this->handleFieldSchema($name, "", true, true);
@@ -264,7 +264,7 @@ class ObjectModel implements ObjectInterface {
   /**
    * Performs saving query (insert or update) to database
    * @return mixed updated class instance or false
-   * @throws \Exception   in case of error
+   * @throws ObjectModelException   in case of error
    */
   public function commit()
   {
@@ -307,7 +307,7 @@ class ObjectModel implements ObjectInterface {
           return $data->next();
         }
       }
-    } catch(\Exception $e) {
+    } catch(ObjectModelException $e) {
       throw $e;
     }
     return false;
@@ -343,7 +343,7 @@ class ObjectModel implements ObjectInterface {
    * @param bool $reverse     reverse handling flag
    * @param bool $setDefault  set value to default flag
    * @return \DateTime|false|int|string
-   * @throws \Exception
+   * @throws ObjectModelException
    */
   public function handleFieldSchema(string $name, $val, bool $reverse = false, bool $setDefault = false) {
     if(isset($this->dataSchema[$name])) {
@@ -351,7 +351,7 @@ class ObjectModel implements ObjectInterface {
 
       if($setDefault === true) {
         if(!isset($fieldSchema->default)) {
-          throw new \Exception("Field {$name} has no defaut value.");
+          throw new ObjectModelException("Field {$name} has no defaut value.");
         }
         $val = $fieldSchema->default;
       }
@@ -368,7 +368,6 @@ class ObjectModel implements ObjectInterface {
             break;
           case "datetime":
             if($reverse) {
-              //die(get_class($val));
               if(get_class($val) === 'DateTime') {
                 $val = $val->format('Y-m-d H:i:s');
               } else {
@@ -415,7 +414,7 @@ class ObjectModel implements ObjectInterface {
           case "enum":
             $vals = ($fieldSchema["enum"] ?? false);
             if(sizeof($vals) === 0 || $vals === false) {
-              throw new \Exception("Wrong enum values for {$name} schema.");
+              throw new ObjectModelException("Wrong enum values for {$name} schema.");
             }
             if(!in_array($val, $vals)) {
               $val = null;
@@ -441,7 +440,7 @@ class ObjectModel implements ObjectInterface {
    * @param $val
    *
    * @return \DateTime|false|int|string
-   * @throws \Exception
+   * @throws ObjectModelException
    */
   public function normalizeField($name, $val) {
     return $this->handleFieldSchema($name, $val, true);
@@ -554,7 +553,7 @@ class ObjectModel implements ObjectInterface {
           if (!in_array($operator, [
               "=", ">", "<", "<=", ">=", "!=", "IN"
           ])) {
-            throw new \Exception("Unknown operator for " . $field);
+            throw new ObjectModelException("Unknown operator for " . $field);
           }
 
           $value = $val[1];
@@ -583,7 +582,7 @@ class ObjectModel implements ObjectInterface {
   public function getOwnedBy($user, $fieldName = "UserID") {
     $user = intval($user);
     if($user <= 0) {
-      throw new \Exception("Wrong user for getOwnedBy: ".$user);
+      throw new ObjectModelException("Wrong user for getOwnedBy: ".$user);
     }
 
     $className = get_called_class();

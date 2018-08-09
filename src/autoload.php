@@ -7,8 +7,10 @@
  * @license MIT
  */
 
-require_once "ObjectModelException.php";
-require_once "ObjectCollection.php";
-require_once "ObjectField.php";
-require_once "ObjectInterface.php";
-require_once "ObjectModel.php";
+define("GETRIX_OBJECTMODEL_PATH", dirname(__FILE__));
+
+require_once GETRIX_OBJECTMODEL_PATH.DIRECTORY_SEPARATOR."ObjectModelException.php";
+require_once GETRIX_OBJECTMODEL_PATH.DIRECTORY_SEPARATOR."ObjectCollection.php";
+require_once GETRIX_OBJECTMODEL_PATH.DIRECTORY_SEPARATOR."ObjectField.php";
+require_once GETRIX_OBJECTMODEL_PATH.DIRECTORY_SEPARATOR."ObjectInterface.php";
+require_once GETRIX_OBJECTMODEL_PATH.DIRECTORY_SEPARATOR."ObjectModel.php";
