@@ -10,8 +10,11 @@
 namespace Getrix;
 
 use FluentPDO;
+use Getrix\ObjectModel\ObjectCollection;
 use Getrix\ObjectModel\ObjectField;
 use Getrix\ObjectModel\ObjectInterface;
+use Getrix\ObjectModel\ObjectModelException;
+use PDO;
 
 require_once "ObjectModelException.php";
 require_once "ObjectField.php";
@@ -37,7 +40,19 @@ class ObjectModel implements ObjectInterface {
    */
   protected static $primaryKey = 'id';
 
-  public static $databaseCallback = null;
+  /*
+   * === Configurable values ===
+  **/
+  /**
+   * @var null|PDO database connection (set via setDB method)
+   */
+  protected static $databaseConnection = null;
+
+  /**
+   * @var string Path to the namespace where children of ObjectModel
+   *             are stored (used in populate method)
+   */
+  protected static $populatePath = "\\GRS\\Objects\\";
 
   /**
    * @var mixed current entry ID
@@ -126,7 +141,7 @@ class ObjectModel implements ObjectInterface {
   public function __set($name, $val) {
 
     if($name === "tableName" || $name === "keyField") {
-      return true;
+      return;
     }
 
     if(!isset($this->data[$name]) && $this->new === false) {
@@ -351,7 +366,7 @@ class ObjectModel implements ObjectInterface {
 
       if($setDefault === true) {
         if(!isset($fieldSchema->default)) {
-          throw new ObjectModelException("Field {$name} has no defaut value.");
+          throw new ObjectModelException("Field {$name} has no default value.");
         }
         $val = $fieldSchema->default;
       }
@@ -428,6 +443,17 @@ class ObjectModel implements ObjectInterface {
               $val = (in_array($val, ["Y", "1", 1, "true", "TRUE", "YES", "yes"],true) ? true
                   : ($fieldSchema->default ? $fieldSchema->default : false));
             }
+            break;
+          case "string":
+            if($reverse) {
+              $val = addslashes(htmlspecialchars($val));
+            } else {
+              $val = stripslashes(htmlspecialchars_decode($val));
+            }
+            break;
+          default:
+            $val = $val;
+            break;
         }
       }
     }
@@ -463,20 +489,45 @@ class ObjectModel implements ObjectInterface {
       }
     }
     if($serializeCollections === true) {
-
+      foreach($result as &$row) {
+        if(is_object($row) && $row instanceof ObjectCollection) {
+          $row = $row->toArray($withComputed);
+        }
+      }
     }
     return $result;
+  }
+
+  public static function setDB($option) {
+    if(is_array($option)) {
+      if(sizeof($option) !== 3) {
+        throw new ObjectModelException("Failed to setDB: provided array must contain three" .
+         "values: connection string, username and password");
+      }
+
+      self::$databaseConnection = new PDO($option[0], $option[1], $option[2]);
+    } elseif(is_object($option) && $option instanceof PDO) {
+      self::$databaseConnection = $option;
+    } else {
+      throw new ObjectModelException("Wrong argument given to setDB: must be an array or " .
+        "instance of PDO");
+    }
   }
 
   /**
    * @return mixed PDO instance
    */
   public static function getDB() {
-    if(!empty(self::$databaseCallback) && is_callable(self::$databaseCallback)) {
-      return self::$databaseCallback();
-    } else {
-      throw new ObjectModelException("databaseCallback has a wrong value");
+
+    if(empty(self::$databaseConnection) ||
+      !is_object(self::$databaseConnection) ||
+      self::$databaseConnection instanceof PDO === false) {
+      throw new ObjectModelException("databaseConnection has a wrong or " .
+        "non-PDO value. Please define database connection via setDB method " .
+        "(see README.md)");
     }
+
+    return self::$databaseConnection;
   }
 
   public static function createOne(array $fields) {
@@ -598,6 +649,15 @@ class ObjectModel implements ObjectInterface {
     );
   }
 
+  /**
+   * @param array $options
+   *
+   * @return ObjectCollection
+   */
+  public static function getAll(array $options = []): ObjectCollection {
+    return self::simpleQuery([], 0,$options);
+  }
+
   public static function getById(int $id, $orderBy = null) {
     return self::simpleQuery(["ID" => $id ], 1, [
       "orderBy" => $orderBy
@@ -669,7 +729,7 @@ class ObjectModel implements ObjectInterface {
             $foreignClass = $schema->populate["model"];
             
           }
-          $populateClass = "\\GRS\\Objects\\" . $foreignClass;
+          $populateClass = self::$populatePath . $foreignClass;
           $pop = $populateClass::getById($this->get($field));
           if($pop->count() > 0) {
             $val = $pop->next();
