@@ -17,9 +17,9 @@ Installation
 composer require getrix/objectmodel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-2. Define a database callback. This is a callback function stored in a static
-property `$databaseCallback` of `ObjectModel` class that should return an PDO
-object with link to database.
+1.  Define a database callback. This is a callback function stored in a static
+    property `$databaseCallback` of `ObjectModel` class that should return an
+    PDO object with link to database.
 
  
 
@@ -31,7 +31,9 @@ Usage
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ php
 use Getrix\ObjectModel;
 
-Getrix\ObjectModel::setDB(new PDO("mysql:dbname=bbass;host=10.11.12.8","root","Sp$%45fge"));
+Getrix\ObjectModel::setDB(
+    new PDO("mysql:dbname=bbass;host=localhost", "user", "password"
+);
 
 class Post extends Getrix\ObjectModel {
   protected static $table = 'Posts';
@@ -84,13 +86,13 @@ should be defined in object constructor, for ex.:
 
 ### Schema field properties
 
-| Property   | Description                                                                                             | Values                                                                       | Default  |
-|------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------|
-| `type`     | Type of field                                                                                           | See “Schema field types” below                                               | `string` |
-| `required` | Is this field is required or not                                                                        | `true` or `false`                                                            | `false`  |
-| `default`  | Default value for the field that will be set in case of field value is null                             | any                                                                          | \-       |
-| `fn`       | Field validator/transformation callback function. Will be used instead of default type validation rules | `function(`*ObjectField *\$schema`, `*mixed *`$value, `*boolean *`$reverse)` | \-       |
-| `populate` | Used to define population class name                                                                    | See “Populating field values” below                                          | \-       |
+| Property   | Description                                                                                             | Values                                                                     | Default  |
+|------------|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|----------|
+| `type`     | Type of field                                                                                           | See “Schema field types” below                                             | `string` |
+| `required` | Is this field is required or not                                                                        | `true` or `false`                                                          | `false`  |
+| `default`  | Default value for the field that will be set in case of field value is null                             | any                                                                        | \-       |
+| `fn`       | Field validator/transformation callback function. Will be used instead of default type validation rules | `function(`*ObjectField* \$schema`,`*mixed* `$value,`*boolean* `$reverse)` | \-       |
+| `populate` | Used to define population class name                                                                    | See “Populating field values” below                                        | \-       |
 
  
 
@@ -106,13 +108,34 @@ should be defined in object constructor, for ex.:
 Version history
 ---------------
 
+### 1.0.2
+
+*Released August, 10th of 2018*
+
+-   **FIX** Fixed bug with `ObjectModel->getById()` method related to name of
+    primary key field.
+
+-   **FIX** Fixed bug with `ObjectModel->getById()` method related to unused
+    `orderBy `argument (because of method is designed for only one item to be
+    returned)
+
+-   **IMPROVEMENT** Documented all the methods in `ObjectModel.php`
+
+-   **IMPROVEMENT** Rewritten `ObjectModel::getOne` method that now based on
+    commonly used `ObjectModel::simpleQuery` method. Usage of `getOne` method is
+    not changed.
+
+-   **IMPROVEMENT** Cleaned up the code in `ObjectModel.php`
+
+ 
+
 ### 1.0.1
 
-Released August, 9th of 2018
+*Released August, 9th of 2018*
 
 -   **UPDATE** Separated default and `string` field validation type
 
--   **IMPROVEMENT **Updated and improved readme
+-   **IMPROVEMENT** Updated and improved readme
 
 -   **IMPROVEMENT** Updated `ObjectModel->toArray()`: added internal collections
     serialization flag
@@ -122,4 +145,6 @@ Released August, 9th of 2018
 
 ### 1.0.0
 
-Released August, 9th of 2018 \* Initial release
+*Released August, 9th of 2018*
+
+-   Initial release
