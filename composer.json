@@ -1,0 +1,19 @@
+{
+  "name": "getrix/objectmodel",
+  "description": "ObjectModel PHP Package",
+  "homepage": "https://github.com/digitalhitler/objectmodel",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Sergey Petrenko",
+      "email": "spetrenko@me.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "envms/fluentpdo": "^1.1"
+  },
+  "autoload": {
+    "files": [ "src/autoload.php" ]
+  }
+}
