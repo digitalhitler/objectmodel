@@ -35,7 +35,7 @@ Getrix\ObjectModel::setDB(
     new PDO("mysql:dbname=bbass;host=localhost", "user", "password"
 );
 
-class Post extends Getrix\ObjectModel {
+final class Post extends Getrix\ObjectModel {
   protected static $table = 'Posts';
   protected static $primaryKey = 'id';
 
@@ -60,7 +60,6 @@ $post = Post::getById(1);
 var_dump($post);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
- 
 
 ### Field rules
 
@@ -107,6 +106,23 @@ should be defined in object constructor, for ex.:
 
 Version history
 ---------------
+
+### 1.1.0
+
+*Released August, 26th of 2018*
+
+-   **IMPROVEMENT** Lots of code refactoring and humanizations
+
+-   **IMPROVEMENT** `ObjectCollection.php` has been heavily refactored.
+
+-   **FIX** No more bug with `is_subclass_of` check in `ObjectCollection::fromArray`
+    static method. 
+
+-   **NEW** Introduced the `ObjectModelException.php` with exception class that
+     is used from now in whole library context.
+
+ 
+
 
 ### 1.0.2
 

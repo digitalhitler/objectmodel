@@ -1,21 +1,22 @@
 {
-  "name": "getrix/objectmodel",
-  "description": "ObjectModel PHP Package",
-  "homepage": "https://github.com/digitalhitler/objectmodel",
-  "license": "MIT",
-  "version": "1.0.2",
-  "type": "project",
-  "authors": [
-    {
-      "name": "Sergey Petrenko",
-      "email": "spetrenko@me.com"
-    }
-  ],
-  "require": {
-    "php": ">=7.1.0",
-    "envms/fluentpdo": "^1.1"
-  },
-  "autoload": {
-    "files": [ "src/autoload.php" ]
-  }
+	"name" : "getrix/objectmodel",
+	"description" : "ObjectModel PHP Package",
+	"homepage" : "https://github.com/digitalhitler/objectmodel",
+	"license" : "MIT",
+	"version" : "1.1.0",
+	"type" : "project",
+	"authors" : [{
+			"name" : "Sergey Petrenko",
+			"email" : "spetrenko@me.com"
+		}
+	],
+	"require" : {
+		"php" : ">=7.1.0",
+		"envms/fluentpdo" : "^1.1"
+	},
+	"autoload" : {
+		"files" : [
+			"src/autoload.php"
+		]
+	}
 }
