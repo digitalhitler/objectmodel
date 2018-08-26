@@ -2,8 +2,10 @@
 /**
  * ObjectModel: PHP helpers to access objects and its collections in database
  *
- * @copyright Copyright (c) 2018 Sergey Petrenko <spetrenko@me.com>
- * @homepage https://github.com/digitalhitler/objectmodel
+ * @package Getrix\ObjectModel
+ * @copyright Copyright (c) 2018 Sergey Petrenko <me@getrix.design>
+ * @author Sergey Petrenko <me@getrix.design>
+ * @homepage  https://github.com/digitalhitler/objectmodel
  * @license   MIT
  */
 
@@ -12,15 +14,15 @@ namespace Getrix;
 require_once "autoload.php";
 
 use FluentPDO;
+use PDO;
 use Getrix\ObjectModel\ObjectCollection;
 use Getrix\ObjectModel\ObjectField;
 use Getrix\ObjectModel\ObjectModelException;
-use PDO;
 
 
 /**
  * Class ObjectModel
- * @package getrix/objectmodel
+ * @package Getrix\ObjectModel
  *
  * Realizes engine for accessing and modifying database data
  * in much more object-oriented way
@@ -526,7 +528,7 @@ class ObjectModel {
             }
             break;
           default:
-            $val = $val;
+//             $val = $val;
             break;
         }
       }
@@ -700,7 +702,7 @@ class ObjectModel {
 
     try {
       $rows = self::getDB()->query($query)->fetchAll();
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       echo "<h1>Failed to execute this:</h1>";
       echo "<pre>" . $query . "</pre>";
     }
