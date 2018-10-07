@@ -6,7 +6,6 @@ PHP helpers to access objects and its collections in database
 **Warning! This project is currently in deep private beta. Please do not use it
 if you care about anything good.**
 
- 
 
 Installation
 ------------
@@ -101,15 +100,22 @@ should be defined in object constructor, for ex.:
 |-----------|--------------|---------------------------------------------------------------------------------|-----------------------------------------------|
 | `string`  | Plain string | Applies `stripslashes` default PHP function after the `htmlspecialchars_decode` | Applies `addslashes` after `htmlspecialchars` |
 | `integer` | Number       |                                                                                 |                                               |
-
+| `associative` | Associative array | Translates stored value to corresponding value in `values` field property by its key | Stores key value of corresponding entry in `values` associative array of the field |  
  
 
 Version history
 ---------------
 
+### 1.1.1
+
+*Released 7th October, 2018*
+-   **FIX** Improved doc comments to be more recognizable by various IDEs.
+
+-   **IMPROVEMENT** Added "associative" type of `ObjectField` (see "Schema field types"). 
+
 ### 1.1.0
 
-*Released August, 26th of 2018*
+*Released 26th August, 2018*
 
 -   **IMPROVEMENT** Lots of code refactoring and humanizations
 
@@ -126,7 +132,7 @@ Version history
 
 ### 1.0.2
 
-*Released August, 10th of 2018*
+*Released 10th August, 2018*
 
 -   **FIX** Fixed bug with `ObjectModel->getById()` method related to name of
     primary key field.
@@ -147,7 +153,7 @@ Version history
 
 ### 1.0.1
 
-*Released August, 9th of 2018*
+*Released 9th August, 2018*
 
 -   **UPDATE** Separated default and `string` field validation type
 
@@ -161,6 +167,6 @@ Version history
 
 ### 1.0.0
 
-*Released August, 9th of 2018*
+*Released 9th August, 2018*
 
 -   Initial release

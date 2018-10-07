@@ -26,6 +26,12 @@ class Post extends Getrix\ObjectModel {
         "title" => [
           "type" => "string"
         ],
+        "test" => [
+          "type" => "associative",
+          "values" => [
+
+          ]
+        ],
         "text" => [
           "type" => "string"
         ]

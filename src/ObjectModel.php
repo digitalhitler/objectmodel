@@ -91,11 +91,11 @@ class ObjectModel {
   /**
    * ObjectModel constructor.
    *
-   * @param string     $tableName table name in database
-   * @param string     $keyField  primary key field name
-   * @param array|null $schema    schema rules
-   * @param array|null $row       current row to be presented like ObjectModel instance
-   * @param bool       $isNew     is this row is new (unsaved in db) or not
+   * @param string     $tableName - table name in database
+   * @param string     $keyField  - primary key field name
+   * @param array|null $schema    - schema rules
+   * @param array|null $row       - current row to be presented like ObjectModel instance
+   * @param bool       $isNew     - is this row is new (unsaved in db) or not
    */
   public function __construct(string $tableName, string $keyField = 'id', array $schema = null, array $row = null, bool $isNew = false) {
 
@@ -133,8 +133,8 @@ class ObjectModel {
   /**
    * Sets the field value
    *
-   * @param $name         field name
-   * @param $val          field value
+   * @param $name        - name
+   * @param $val         - value
    *
    * @return mixed|void
    * @throws ObjectModelException
@@ -199,11 +199,11 @@ class ObjectModel {
   /**
    * Magic isset method
    *
-   * @param string $name property name
+   * @param string $name - property name
    *
-   * @return bool           yes or no
+   * @return bool - yes or no
    */
-  public function __isset(string $name) {
+  public function __isset(string $name): bool {
     return (isset($this->data[ $name ]));
   }
 
@@ -230,8 +230,8 @@ class ObjectModel {
   /**
    * Changes the value of field
    *
-   * @param string $name field name
-   * @param        $val  field value
+   * @param string $name - field name
+   * @param        $val  - field value
    */
   public function setValue(string $name, $val) {
 //    if (array_key_exists($name, $this->data)) {
@@ -242,9 +242,9 @@ class ObjectModel {
   /**
    * Changes the values of the multiple fields (recursively calls setValue for each of them)
    *
-   * @param $arr array of field => value entries
+   * @param $arr - array of field => value entries
    */
-  public function setValues($arr) {
+  public function setValues(array $arr): void {
     if (is_array($arr) && sizeof($arr) > 0) {
       foreach ($arr as $name => $val) {
         $this->setValue($name, $val);
@@ -405,8 +405,8 @@ class ObjectModel {
   /**
    * Saves computed value to object
    *
-   * @param string $name   name of field
-   * @param        $val    value
+   * @param string $name   - name of field
+   * @param        $val    - value
    */
   public function setComputedValue(string $name, $val): void {
     $this->computed[ $name ] = $val;
@@ -417,8 +417,8 @@ class ObjectModel {
    *
    * @param $arr  schema describer
    */
-  public function setSchema($arr) {
-    if (is_array($arr) && sizeof($arr) > 0) {
+  public function setSchema(array $arr) {
+    if (\is_array($arr) && sizeof($arr) > 0) {
       foreach ($arr as $name => $params) {
         $this->dataSchema[ $name ] = new ObjectField($name, $params);
       }
@@ -509,6 +509,22 @@ class ObjectModel {
             }
             if ( !in_array($val, $vals)) {
               $val = null;
+            }
+            break;
+          case "associative":
+            // @todo this is incomplete
+            // @fixme finish it
+            $vals = ($fieldSchema["values"] ?? false);
+            if(sizeof($vals) === 0 || $vals === false) {
+              throw new ObjectModelException("Wrong associative values for {$name} schema.");
+            }
+            if($reverse) {
+            } else {
+              if ( !in_array($val, $vals)) {
+                $val = null;
+              } else {
+                $val = $vals[ $val ];
+              }
             }
             break;
           case "boolean":
