@@ -3,8 +3,8 @@
 	"description" : "ObjectModel PHP Package",
 	"homepage" : "https://github.com/digitalhitler/objectmodel",
 	"license" : "MIT",
-	"version" : "1.1.1",
-	"type" : "project",
+	"version" : "1.2.0",
+	"type" : "library",
 	"authors" : [{
 			"name" : "Sergey Petrenko",
 			"email" : "spetrenko@me.com"
@@ -12,7 +12,8 @@
 	],
 	"require" : {
 		"php" : ">=7.1.0",
-		"envms/fluentpdo" : "^1.1"
+		"envms/fluentpdo" : "^1.1",
+		"ext-json": "*"
 	},
 	"autoload" : {
 		"files" : [

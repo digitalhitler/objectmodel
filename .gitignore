@@ -1,10 +1,14 @@
 composer.phar
-/vendor/
-/.idea
-/.idea/*
+vendor/
+.idea
+.idea/*
 *.tar
-/tests
-/tests/*
+tests
+tests/*
+
+# Eclipse IDE
+.settings
+.settings/*
 
 # User-specific stuff
 .idea/**/workspace.xml

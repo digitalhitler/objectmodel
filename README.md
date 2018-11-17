@@ -106,6 +106,13 @@ should be defined in object constructor, for ex.:
 Version history
 ---------------
 
+### 1.2.0
+
+*Released 17th November, 2018*
+-   **IMPROVEMENT** Implemented custom field types base class (`ObjectFieldType`), 
+-   **IMPROVEMENT** Implemented `extractField` method for collections.
+-   **TINY CHANGE** Moved all exception files to `src/exceptions` directory.
+
 ### 1.1.1
 
 *Released 7th October, 2018*

@@ -207,6 +207,52 @@ class ObjectCollection implements \Countable, \Iterator {
   }
 
   /**
+   * Extract only one field values to separate flat array or two fields as associative array.
+   * @param string      $valueField - field used as entries values
+   * @param string|null $keyField - field used as entries keys
+   * @param bool        $includeNull - include null values or not (default is false)
+   *
+   * @return array - extracted data
+   */
+  public function extractField(string $valueField, string $keyField = null, bool $includeNull = false): array {
+    $result = [];
+
+    $this->rewind();
+
+    // Loop head:
+    do {
+      $item = $this->next();
+
+      if($item) {
+        $val = null;
+        $key = null;
+
+        // Extract:
+        $val = $item->get($valueField);
+        if($keyField !== null) {
+          $key = $item->get($keyField);
+        }
+
+        // Append to result:
+        if($val !== null || $key !== null) {
+          if($keyField !== null && $key !== null) {
+            $result[$key] = $val ?? null;
+          } else {
+            if(($val === null && $includeNull === true) || $val !== null) {
+              array_push($result, $val);
+            }
+          }
+        }
+      }
+    // Iterating collection`s items as loop thah became finite only on last child
+    } while($item !== null);
+
+    // Loop end
+
+    return $result;
+  }
+
+  /**
    * Creates collection from an plain array with set of ObjectModel.
    *
    * @param array $arr plain flat array with ObjectModel entries.

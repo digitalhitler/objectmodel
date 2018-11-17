@@ -15,6 +15,7 @@ require_once "autoload.php";
 
 use FluentPDO;
 use PDO;
+use Getrix\ObjectModel\ObjectFieldType;
 use Getrix\ObjectModel\ObjectCollection;
 use Getrix\ObjectModel\ObjectField;
 use Getrix\ObjectModel\ObjectModelException;
@@ -453,99 +454,105 @@ class ObjectModel {
       }
 
       if ($fieldSchema->type) {
-        switch ($fieldSchema->type) {
-          case "integer":
-            $val = intval($val);
-            break;
-          case "datetime":
-            if ($reverse) {
-              if (get_class($val) === 'DateTime') {
-                $val = $val->format('Y-m-d H:i:s');
+        if(ObjectFieldType::hasType($fieldSchema->type)) {
+          $val = ObjectFieldType::executeWithType($fieldSchema->type, $val, $reverse);
+        } else {
+          // @todo: move all this default types to the types/{name}.php files
+
+          switch ($fieldSchema->type) {
+            case 'integer':
+              $val = intval($val);
+              break;
+            case 'datetime':
+              if ($reverse) {
+                if ($val instanceof \DateTime) {
+                  $val = $val->format('Y-m-d H:i:s');
+                } else {
+                  $val = date('Y-m-d H:i:s', $val);
+                }
               } else {
+                if ($val !== null) {
+                  $val = new \DateTime($val, new \DateTimeZone('UTC'));
+                }
+              }
+              break;
+            case 'timestamp':
+              if ($reverse) {
                 $val = date('Y-m-d H:i:s', $val);
+              } else {
+                if ($val !== null) {
+                  $val = strtotime($val);
+                }
               }
-            } else {
-              if ($val !== null) {
-                $val = new \DateTime($val, new \DateTimeZone('UTC'));
+              break;
+            case 'money':
+              if ($reverse) {
+                $val = (float)round($val, 2);
+              } else {
+                $val = (float)round($val, 2);
               }
-            }
-            break;
-          case "timestamp":
-            if ($reverse) {
-              $val = date('Y-m-d H:i:s', $val);
-            } else {
-              if ($val !== null) {
-                $val = strtotime($val);
+              break;
+            case "set":
+              if ($reverse) {
+                if (\is_array($val)) {
+                  $val = implode(",", $val);
+                }
+              } else {
+                $val = explode(",", $val);
               }
-            }
-            break;
-          case "money":
-            if ($reverse) {
-              $val = floatval(round($val, 2));
-            } else {
-              $val = floatval(round($val, 2));
-            }
-            break;
-          case "set":
-            if ($reverse) {
-              if (is_array($val)) {
-                $val = implode(",", $val);
+              break;
+            case "json":
+              if ($reverse) {
+                $val = json_encode($val);
+              } else {
+                $val = json_decode($val, true);
               }
-            } else {
-              $val = explode(",", $val);
-            }
-            break;
-          case "json":
-            if ($reverse) {
-              $val = json_encode($val);
-            } else {
-              $val = json_decode($val, true);
-            }
-            break;
-          case "enum":
-            $vals = ($fieldSchema[ "enum" ] ?? false);
-            if (sizeof($vals) === 0 || $vals === false) {
-              throw new ObjectModelException("Wrong enum values for {$name} schema.");
-            }
-            if ( !in_array($val, $vals)) {
-              $val = null;
-            }
-            break;
-          case "associative":
-            // @todo this is incomplete
-            // @fixme finish it
-            $vals = ($fieldSchema["values"] ?? false);
-            if(sizeof($vals) === 0 || $vals === false) {
-              throw new ObjectModelException("Wrong associative values for {$name} schema.");
-            }
-            if($reverse) {
-            } else {
+              break;
+            case "enum":
+              $vals = ($fieldSchema[ "enum" ] ?? false);
+              if (sizeof($vals) === 0 || $vals === false) {
+                throw new ObjectModelException("Wrong enum values for {$name} schema.");
+              }
               if ( !in_array($val, $vals)) {
                 $val = null;
-              } else {
-                $val = $vals[ $val ];
               }
-            }
-            break;
-          case "boolean":
-            if ($reverse === true) {
-              $val = ($val === true || $val > 0 || $val == "true" ? 1
-                : 0);
-            } else {
-              $val = (in_array($val, ["Y", "1", 1, "true", "TRUE", "YES", "yes"], true) ? true
-                : ($fieldSchema->default ? $fieldSchema->default : false));
-            }
-            break;
-          case "string":
-            if ($reverse) {
-              $val = addslashes(htmlspecialchars($val));
-            } else {
-              $val = stripslashes(htmlspecialchars_decode($val));
-            }
-            break;
-          default:
+              break;
+            case "associative":
+              // @todo this is incomplete
+              // @fixme finish it
+              $vals = ($fieldSchema[ "values" ] ?? false);
+              if (sizeof($vals) === 0 || $vals === false) {
+                throw new ObjectModelException("Wrong associative values for {$name} schema.");
+              }
+              if ($reverse) {
+              } else {
+                if ( !in_array($val, $vals)) {
+                  $val = null;
+                } else {
+                  $val = $vals[ $val ];
+                }
+              }
+              break;
+            case "boolean":
+              if ($reverse === true) {
+                $val = ($val === true || $val > 0 || $val == "true" ? 1
+                  : 0);
+              } else {
+                $val = (in_array($val, ["Y", "1", 1, "true", "TRUE", "YES", "yes"], true) ? true
+                  : ($fieldSchema->default ? $fieldSchema->default : false));
+              }
+              break;
+            case "string":
+              if ($reverse) {
+                $val = addslashes(htmlspecialchars($val));
+              } else {
+                $val = stripslashes(htmlspecialchars_decode($val));
+              }
+              break;
+            default:
 //             $val = $val;
-            break;
+              break;
+          }
         }
       }
     }
@@ -893,5 +900,9 @@ class ObjectModel {
 
     return ObjectCollection::fromArray($items);
 
+  }
+
+  public static function registerFieldType(ObjectFieldType $type) {
+    ObjectFieldType::register($type);
   }
 }
